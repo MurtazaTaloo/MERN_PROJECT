@@ -10,4 +10,6 @@ class Payment extends Component {
   }
 }
 
+// changes
+
 export default Payment;
