@@ -10,17 +10,20 @@ class CheckoutForm extends Component {
 
   async submit(ev) {
     ev.preventDefault();
-    const { target } = ev;
-    console.log(target);
+    const { currentTarget } = ev;
+    const fD = new FormData(currentTarget);
+
+    const customerInfo = {
+      name: fD.get("name"),
+      address: fD.get("address"),
+      email: fD.get("email")
+    };
 
     let { token } = await this.props.stripe.createToken();
 
-    const paymentData = this.props.cartData;
+    const itemsInCart = this.props.cartData;
 
-    const dataObject = {
-      token: token,
-      payload: paymentData
-    };
+    const cartTotal = this.props.cartTotal;
 
     // axios request to the backend with token to process the payment
     axios
@@ -28,27 +31,48 @@ class CheckoutForm extends Component {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
         tokenId: token.id,
-        payload: dataObject
+        orderData: { itemsInCart, customerInfo, cartTotal }
       })
       .then(response => {
         console.log(response.data);
       })
       .catch(err => console.log("this is the error" + err));
   }
+
   render() {
+    const fieldStyle = {
+      color: "black",
+      width: "100%"
+    };
     return (
       <div
         style={{
-          color: "black",
-          width: "500px"
+          width: "100%"
         }}
       >
         <form onSubmit={this.submit}>
           <p>Would you like to complete the purchase?</p>
 
-          <input type="text" name="name" placeholder="Card Holder's Name" />
+          <input
+            style={fieldStyle}
+            type="text"
+            name="name"
+            placeholder="Card Holder's Name"
+          />
 
-          <input type="text" name="address" placeholder="Delivery address" />
+          <input
+            style={fieldStyle}
+            type="text"
+            name="address"
+            placeholder="Delivery address"
+          />
+
+          <input
+            style={fieldStyle}
+            type="text"
+            name="email"
+            placeholder=" email address"
+          />
 
           <CardElement />
           <button type="submit">Pay</button>
