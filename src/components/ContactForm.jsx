@@ -30,11 +30,14 @@ class ContactForm extends Component {
 
     const { name, email, message } = this.state;
     try {
-      let response = await axios.post("/api/form", {
-        name,
-        email,
-        message
-      });
+      let response = await axios.post(
+        `${process.env.REACT_APP_BACK_END}/api/form`,
+        {
+          name,
+          email,
+          message
+        }
+      );
       this.setState({ successMessage: response.data });
       // console.log(response.data);
     } catch (err) {
